@@ -1,0 +1,4 @@
+Mean Runtime Report (sec.)  , 
+Kernel         , RAJA_RVV
+Kernel         , default 
+Polybench_3MM  , 42.990490

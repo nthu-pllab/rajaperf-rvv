@@ -1,0 +1,4 @@
+Kernels run without MPI
+Kernels         ,    Problem size ,    Reps ,    Iterations/rep , Kernels/rep ,    Bytes/rep ,    FLOPS/rep ,    BytesRead/rep ,    BytesWritten/rep ,    BytesAtomicModifyWritten/rep
+Polybench_2MM   ,          250000 ,       1 ,            500000 ,           2 ,     12480000 ,    670000000 ,          8480000 ,             4000000 ,                               0
+Polybench_3MM   ,          250000 ,       1 ,            750000 ,           3 ,     18840000 ,    802500000 ,         12840000 ,             6000000 ,                               0

@@ -1,0 +1,4 @@
+Mean Speedup Report (T_ref/T_var): ref var = Base_Seq  ,  ,  ,  , 
+Kernel       , Base_Seq , Lambda_Seq , RAJA_Seq , RAJA_RVV
+Kernel       , default  , default    , default  , default 
+Basic_DAXPY  ,    1.000 ,      1.001 ,    1.006 ,    1.219

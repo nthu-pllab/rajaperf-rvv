@@ -1,0 +1,8 @@
+Mean Runtime Report (sec.)  ,  ,  , 
+Kernel             , Base_Seq , RAJA_Seq , RAJA_RVV
+Kernel             , default  , default  , default 
+Basic_DAXPY        , 0.119723 , 0.120167 , 0.116795
+Polybench_2MM      , 0.000000 , 0.000001 , 0.000001
+Polybench_3MM      , 0.000001 , 0.000000 , 0.000001
+Polybench_GEMM     , 0.000001 , 0.000001 , 0.000001
+Polybench_GESUMMV  , 0.029856 , 0.030180 , 0.065594

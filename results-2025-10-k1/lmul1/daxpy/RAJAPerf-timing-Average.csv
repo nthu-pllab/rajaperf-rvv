@@ -1,0 +1,4 @@
+Mean Runtime Report (sec.)  ,  ,  ,  , 
+Kernel       , Base_Seq , Lambda_Seq , RAJA_Seq , RAJA_RVV
+Kernel       , default  , default    , default  , default 
+Basic_DAXPY  , 2.737919 ,   2.750094 , 2.733253 , 2.256230

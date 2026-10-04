@@ -1,0 +1,13 @@
+FOM Report : signed speedup(-)/slowdown(+) for each PM (base vs. RAJA) -> (T_RAJA - T_base) / T_base ) ,  ,  ,  , 
+'OVER_TOL' in column to right if RAJA speedup is over tolerance ,  ,  ,  , 
+Kernel             , Base_Seq-default,         , RAJA_Seq-default,        
+Basic_DAXPY        , 0               ,base_ref , 0.0037          ,        
+Polybench_2MM      , 0               ,base_ref , 0.25            ,OVER_TOL
+Polybench_3MM      , 0               ,base_ref , -0.31           ,        
+Polybench_GEMM     , 0               ,base_ref , 0               ,        
+Polybench_GESUMMV  , 0               ,base_ref , 0.011           ,        
+                   ,                 ,         ,                 ,        
+Col Min            , 0               ,         , -0.31           ,        
+Col Max            , 0               ,         , 0.25            ,        
+Col Avg            , 0               ,         , -0.0098         ,        
+Col Std Dev        , 0               ,         , 0.032           ,        

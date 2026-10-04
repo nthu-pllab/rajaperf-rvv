@@ -1,0 +1,8 @@
+Mean Speedup Report (T_ref/T_var): ref var = Base_Seq  ,  ,  , 
+Kernel             , Base_Seq , RAJA_Seq , RAJA_RVV
+Kernel             , default  , default  , default 
+Basic_DAXPY        ,    1.000 ,    0.996 ,    1.025
+Polybench_2MM      ,    1.000 ,    0.800 ,    0.800
+Polybench_3MM      ,    1.000 ,    1.456 ,    1.067
+Polybench_GEMM     ,    1.000 ,    1.000 ,    1.334
+Polybench_GESUMMV  ,    1.000 ,    0.989 ,    0.455

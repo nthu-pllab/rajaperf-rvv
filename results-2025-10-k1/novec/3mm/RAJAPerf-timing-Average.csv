@@ -1,0 +1,4 @@
+Mean Runtime Report (sec.)  ,  ,  ,  , 
+Kernel         , Base_Seq , Lambda_Seq , RAJA_Seq , RAJA_RVV
+Kernel         , default  , default    , default  , default 
+Polybench_3MM  , 431.362856 , 432.914596 , 433.108807 , 78.107818

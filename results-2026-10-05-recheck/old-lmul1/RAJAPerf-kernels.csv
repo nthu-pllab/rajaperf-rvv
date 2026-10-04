@@ -1,0 +1,4 @@
+Kernels run without MPI
+Kernels             ,    Problem size ,    Reps ,    Iterations/rep , Kernels/rep ,    Bytes/rep ,    FLOPS/rep ,    BytesRead/rep ,    BytesWritten/rep ,    BytesAtomicModifyWritten/rep
+Basic_DAXPY         ,          100000 ,      50 ,            100000 ,           1 ,      2400000 ,       200000 ,          1600000 ,              800000 ,                               0
+Polybench_GESUMMV   ,           99856 ,      12 ,               316 ,           1 ,      1602752 ,       400372 ,          1600224 ,                2528 ,                               0

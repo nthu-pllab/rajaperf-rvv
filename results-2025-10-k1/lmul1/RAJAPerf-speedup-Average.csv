@@ -1,0 +1,4 @@
+Mean Speedup Report (T_ref/T_var): ref var = RAJA_RVV  , 
+Kernel         , RAJA_RVV
+Kernel         , default 
+Polybench_2MM  ,    1.000
