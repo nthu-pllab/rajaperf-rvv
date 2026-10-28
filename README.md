@@ -66,6 +66,33 @@ Matrix kernels: 5.6x (LMUL1) to 15x (LMUL4) over scalar. DAXPY is memory-bound
 (1.2x). GESUMMV's RVV variant is slower than scalar. All RVV checksums match
 Base_Seq. A fresh build in Oct 2026 reproduced the GEMM result (5.5x).
 
+## Known issue: NaN / wrong results when a size is not a multiple of the lane count
+
+**Symptom.** RAJA_RVV kernels produce NaN (or silently wrong values) when a
+dimension is not a multiple of VLEN/elem_bits (4 doubles at VLEN 256).
+Seen on some RVV implementations, not on the SpacemiT K1.
+
+**Cause.** For partial tiles the fork loads with a masked load under the
+"mask agnostic" policy (`__riscv_vle64_v_f64m1_m`), which leaves the masked-off
+lanes **undefined**. RAJA's generic tensor layer assumes those lanes are zero
+(the AVX backends use `maskload`, which zero-fills) and then does full-width
+reductions on them (`dot`, `sum`, matrix-vector products). On hardware that
+implements "agnostic" as all-ones the lanes hold a NaN bit pattern, so every
+reduction that touches a tail becomes NaN. On the K1 the lanes are left
+undisturbed, so the result depends on stale register contents and happened to
+pass. `tail-fix/tailtest.cpp` reproduces it: it passes on the K1 and fails
+under `qemu-riscv64 -cpu rv64,v=true,vlen=256,rvv_ta_all_1s=true,rvv_ma_all_1s=true`.
+
+**Fix.** `tail-fix/raja-rvv-zero-fill-partial-loads.patch` (applies to
+ShouChenChiu/RAJA `develop`) switches the partial loads (`load_packed_n`,
+`load_strided_n`, `gather_n`, all four element types) to the mask-undisturbed
+form with a zero merge operand, so masked-off lanes are zero, and makes the
+`sum`/`max` default lane count `s_num_elem` instead of the hard-coded
+`__LMUL__ * 4` (which was only right for 64-bit elements at VLEN 256).
+`build.sh` applies it automatically. With the fix, the probe passes under the
+all-ones QEMU, and RAJAPerf GEMM/GESUMMV/DAXPY at size 1001 (not a multiple of
+4) match Base_Seq checksums on the K1 with unchanged speed.
+
 ## Caveats for other targets (K3, gem5)
 
 - `__VL__` is fixed at compile time; set it to the target's VLEN.

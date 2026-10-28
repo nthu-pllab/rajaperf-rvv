@@ -42,6 +42,9 @@ if [ ! -d RAJAPerf-v2025.03.0 ]; then
   rm -rf RAJAPerf-v2025.03.0/tpl/RAJA
   git clone --branch develop "$RAJA_FORK" RAJAPerf-v2025.03.0/tpl/RAJA
   (cd RAJAPerf-v2025.03.0/tpl/RAJA && git submodule update --init --depth 1 blt tpl/camp tpl/desul)
+  # 4. Zero-fill masked-off lanes in partial loads (fixes NaN / wrong results when
+  #    a dimension is not a multiple of the lane count; see tail-fix/README section).
+  (cd RAJAPerf-v2025.03.0/tpl/RAJA && git apply "$HERE/tail-fix/raja-rvv-zero-fill-partial-loads.patch")
 fi
 
 cd RAJAPerf-v2025.03.0

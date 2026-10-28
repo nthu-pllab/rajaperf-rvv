@@ -1,0 +1,192 @@
+diff -ruN a/include/RAJA/policy/tensor/arch/rvv/rvv_double.hpp b/include/RAJA/policy/tensor/arch/rvv/rvv_double.hpp
+--- a/include/RAJA/policy/tensor/arch/rvv/rvv_double.hpp	2026-10-05 04:25:08.279127885 +0800
++++ b/include/RAJA/policy/tensor/arch/rvv/rvv_double.hpp	2026-10-28 16:02:44.508334218 +0800
+@@ -170,7 +170,7 @@
+ #ifdef RAJA_ENABLE_VECTOR_STATS
+     RAJA::tensor_stats::num_vector_load_packed_n++;
+ #endif
+-    m_value = VOP(vle64, v, f64, __LMUL__,_m)(createMask(N), ptr, vl);
++    m_value = VOP(vle64, v, f64, __LMUL__,_mu)(createMask(N), VOP(vfmv, v_f, f64, __LMUL__,)((double)0, vl), ptr, vl);
+     return *this;
+   }
+ 
+@@ -202,7 +202,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     ptrdiff_t byte_stride = (ptrdiff_t)(stride * sizeof(double));
+-    m_value = VOP(vlse64, v, f64, __LMUL__ ,_m)(createMask(N), ptr, byte_stride, vl);
++    m_value = VOP(vlse64, v, f64, __LMUL__ ,_mu)(createMask(N), VOP(vfmv, v_f, f64, __LMUL__,)((double)0, vl), ptr, byte_stride, vl);
+     return *this;
+   }
+ 
+@@ -244,7 +244,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif 
+     auto index = VREINTERPRET(i64, u64, __LMUL__)(offsets.get_register());
+-    m_value = VOP(vluxei64, v, f64, __LMUL__, _m)(createMask(N), ptr, index, vl);
++    m_value = VOP(vluxei64, v, f64, __LMUL__, _mu)(createMask(N), VOP(vfmv, v_f, f64, __LMUL__,)((double)0, vl), ptr, index, vl);
+     return *this;
+   }
+ 
+@@ -434,7 +434,7 @@
+    * @return Sum of the values of the vectors scalar elements
+    */
+   RAJA_INLINE
+-  element_type sum(camp::idx_t N = __LMUL__ * 4) const
++  element_type sum(camp::idx_t N = s_num_elem) const
+   {
+     auto init_scale = VOP(vfmv, v_f, f64, 1,)((double)0, vl);
+     auto vsum = VOP(vfredosum, vs, f64, __LMUL__,_f64m1_m)(createMask(N), m_value, init_scale, vl); 
+@@ -448,7 +448,7 @@
+    * @return The largest scalar element in the register
+    */
+   RAJA_INLINE
+-  element_type max(camp::idx_t N = __LMUL__ * 4) const
++  element_type max(camp::idx_t N = s_num_elem) const
+   {
+     auto e_ = VOP(vfmv, v_f, f64, 1,)(-INFINITY, 1);
+     auto vmax = VOP(vfredmax, vs, f64, __LMUL__, _f64m1_m)(createMask(N), m_value, e_, vl);
+diff -ruN a/include/RAJA/policy/tensor/arch/rvv/rvv_float.hpp b/include/RAJA/policy/tensor/arch/rvv/rvv_float.hpp
+--- a/include/RAJA/policy/tensor/arch/rvv/rvv_float.hpp	2026-10-05 04:25:08.279184931 +0800
++++ b/include/RAJA/policy/tensor/arch/rvv/rvv_float.hpp	2026-10-28 16:02:44.508460294 +0800
+@@ -168,7 +168,7 @@
+ #ifdef RAJA_ENABLE_VECTOR_STATS
+     RAJA::tensor_stats::num_vector_load_packed_n++;
+ #endif
+-    m_value = VOP(vle32, v, f32, __LMUL__,_m)(createMask(N), ptr, vl);
++    m_value = VOP(vle32, v, f32, __LMUL__,_mu)(createMask(N), VOP(vfmv, v_f, f32, __LMUL__,)((float)0, vl), ptr, vl);
+     return *this;
+   }
+ 
+@@ -200,7 +200,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     ptrdiff_t byte_stride = (ptrdiff_t)(stride * sizeof(float));
+-    m_value = VOP(vlse32, v, f32, __LMUL__ ,_m)(createMask(N), ptr, byte_stride, vl);
++    m_value = VOP(vlse32, v, f32, __LMUL__ ,_mu)(createMask(N), VOP(vfmv, v_f, f32, __LMUL__,)((float)0, vl), ptr, byte_stride, vl);
+     return *this;
+   }
+ 
+@@ -242,7 +242,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     auto index = VREINTERPRET(i32, u32, __LMUL__)(offsets.get_register());
+-    m_value = VOP(vluxei32, v, f32, __LMUL__, _m)(createMask(N), ptr, index, vl);
++    m_value = VOP(vluxei32, v, f32, __LMUL__, _mu)(createMask(N), VOP(vfmv, v_f, f32, __LMUL__,)((float)0, vl), ptr, index, vl);
+     return *this;
+   }
+ 
+@@ -432,7 +432,7 @@
+    * @return Sum of the values of the vectors scalar elements
+    */
+   RAJA_INLINE
+-  element_type sum(camp::idx_t N = __LMUL__ * 4) const
++  element_type sum(camp::idx_t N = s_num_elem) const
+   {
+     auto init_scale = VOP(vfmv, v_f, f32, 1,)((float)0, vl);
+     auto vsum = VOP(vfredosum, vs, f32, __LMUL__,_f32m1_m)(createMask(N), m_value, init_scale, vl); 
+@@ -446,7 +446,7 @@
+    * @return The largest scalar element in the register
+    */
+   RAJA_INLINE
+-  element_type max(camp::idx_t N = __LMUL__ * 4) const
++  element_type max(camp::idx_t N = s_num_elem) const
+   {
+     auto e_ = VOP(vfmv, v_f, f32, 1,)(-INFINITY, 1);
+     auto vmax = VOP(vfredmax, vs, f32, __LMUL__, _f32m1_m)(createMask(N), m_value, e_, vl);
+diff -ruN a/include/RAJA/policy/tensor/arch/rvv/rvv_int32.hpp b/include/RAJA/policy/tensor/arch/rvv/rvv_int32.hpp
+--- a/include/RAJA/policy/tensor/arch/rvv/rvv_int32.hpp	2026-10-05 04:25:08.279184931 +0800
++++ b/include/RAJA/policy/tensor/arch/rvv/rvv_int32.hpp	2026-10-28 16:02:44.508511840 +0800
+@@ -168,7 +168,7 @@
+ #ifdef RAJA_ENABLE_VECTOR_STATS
+     RAJA::tensor_stats::num_vector_load_packed_n++;
+ #endif
+-    m_value = VOP(vle32, v, i32, __LMUL__, _m)(createMask(N), ptr, vl);
++    m_value = VOP(vle32, v, i32, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i32, __LMUL__,)((int32_t)0, vl), ptr, vl);
+     return *this;
+   }
+ 
+@@ -200,7 +200,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     ptrdiff_t byte_stride = (ptrdiff_t)(stride * sizeof(int32_t));
+-    m_value = VOP(vlse32, v, i32, __LMUL__, _m)(createMask(N), ptr, byte_stride, vl);
++    m_value = VOP(vlse32, v, i32, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i32, __LMUL__,)((int32_t)0, vl), ptr, byte_stride, vl);
+     return *this;
+   }
+ 
+@@ -242,7 +242,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     auto index = VREINTERPRET(i32, u32, __LMUL__)(offsets.get_register());
+-    m_value = VOP(vluxei32, v, i32, __LMUL__, _m)(createMask(N), ptr, index, vl);
++    m_value = VOP(vluxei32, v, i32, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i32, __LMUL__,)((int32_t)0, vl), ptr, index, vl);
+     return *this;
+   }
+ 
+@@ -431,7 +431,7 @@
+ //    * @return Sum of the values of the vectors scalar elements
+ //    */
+   RAJA_INLINE
+-  element_type sum(camp::idx_t N = __LMUL__ * 4) const
++  element_type sum(camp::idx_t N = s_num_elem) const
+   {
+     auto init_scale = VOP(vmv, v_x, i32, 1,)((int32_t)0, vl);
+     auto vsum = VOP(vredsum, vs, i32, __LMUL__, _i32m1_m)(createMask(N), m_value, init_scale, vl); 
+@@ -445,7 +445,7 @@
+    * @return The largest scalar element in the register
+    */
+   RAJA_INLINE
+-  element_type max(camp::idx_t N = __LMUL__ * 4) const
++  element_type max(camp::idx_t N = s_num_elem) const
+   {
+     auto e_ = VOP(vmv, v_x, i32, 1,)(-INFINITY, 1);
+     auto vmax = VOP(vredmax, vs, i32, __LMUL__, _i32m1_m)(createMask(N), m_value, e_, vl);
+diff -ruN a/include/RAJA/policy/tensor/arch/rvv/rvv_int64.hpp b/include/RAJA/policy/tensor/arch/rvv/rvv_int64.hpp
+--- a/include/RAJA/policy/tensor/arch/rvv/rvv_int64.hpp	2026-10-05 04:25:08.279184931 +0800
++++ b/include/RAJA/policy/tensor/arch/rvv/rvv_int64.hpp	2026-10-28 16:02:44.508560681 +0800
+@@ -169,7 +169,7 @@
+ #ifdef RAJA_ENABLE_VECTOR_STATS
+     RAJA::tensor_stats::num_vector_load_packed_n++;
+ #endif
+-    m_value = VOP(vle64, v, i64, __LMUL__, _m)(createMask(N), ptr, vl);
++    m_value = VOP(vle64, v, i64, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i64, __LMUL__,)((int64_t)0, vl), ptr, vl);
+     return *this;
+   }
+ 
+@@ -201,7 +201,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     ptrdiff_t byte_stride = (ptrdiff_t)(stride * sizeof(int64_t));
+-    m_value = VOP(vlse64, v, i64, __LMUL__, _m)(createMask(N), ptr, byte_stride, vl);
++    m_value = VOP(vlse64, v, i64, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i64, __LMUL__,)((int64_t)0, vl), ptr, byte_stride, vl);
+     return *this;
+   }
+ 
+@@ -243,7 +243,7 @@
+     RAJA::tensor_stats::num_vector_load_strided_n++;
+ #endif
+     auto index = VREINTERPRET(i64, u64, __LMUL__)(offsets.get_register());
+-    m_value = VOP(vluxei64, v, i64, __LMUL__, _m)(createMask(N), ptr, index, vl);
++    m_value = VOP(vluxei64, v, i64, __LMUL__, _mu)(createMask(N), VOP(vmv, v_x, i64, __LMUL__,)((int64_t)0, vl), ptr, index, vl);
+     return *this;
+   }
+ 
+@@ -433,7 +433,7 @@
+ //    * @return Sum of the values of the vectors scalar elements
+ //    */
+   RAJA_INLINE
+-  element_type sum(camp::idx_t N = __LMUL__ * 4) const
++  element_type sum(camp::idx_t N = s_num_elem) const
+   {
+     auto init_scale = VOP(vmv, v_x, i64, 1,)((int64_t)0, vl);
+     auto vsum = VOP(vredsum, vs, i64, __LMUL__, _i64m1_m)(createMask(N), m_value, init_scale, vl); 
+@@ -447,7 +447,7 @@
+    * @return The largest scalar element in the register
+    */
+   RAJA_INLINE
+-  element_type max(camp::idx_t N = __LMUL__ * 4) const
++  element_type max(camp::idx_t N = s_num_elem) const
+   {
+     auto e_ = VOP(vmv, v_x, i64, 1,)(-INFINITY, 1);
+     auto vmax = VOP(vredmax, vs, i64, __LMUL__, _i64m1_m)(createMask(N), m_value, e_, vl);
