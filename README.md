@@ -83,6 +83,12 @@ undisturbed, so the result depends on stale register contents and happened to
 pass. `tail-fix/tailtest.cpp` reproduces it: it passes on the K1 and fails
 under `qemu-riscv64 -cpu rv64,v=true,vlen=256,rvv_ta_all_1s=true,rvv_ma_all_1s=true`.
 
+gem5 is one of the all-ones implementations: in `src/arch/riscv/isa/formats/vector_mem.isa`
+(`getTailMaskPolicyCode`, gem5 stable as of Oct 2026) a vector load under
+`ta,ma` sets every tail and masked-off byte to `0xff`; only `tu` or `mu`
+preserves the old register. GCC emits `ta,ma` for the `_m` intrinsics, so on
+gem5 every partial tile loads NaN into its unused lanes.
+
 **Fix.** `tail-fix/raja-rvv-zero-fill-partial-loads.patch` (applies to
 ShouChenChiu/RAJA `develop`) switches the partial loads (`load_packed_n`,
 `load_strided_n`, `gather_n`, all four element types) to the mask-undisturbed
